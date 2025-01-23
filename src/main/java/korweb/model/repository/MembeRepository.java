@@ -35,4 +35,8 @@ public interface MembeRepository extends JpaRepository<MemberEntity,Integer> {
 
      // 로그인 추상메서드
         boolean existsByMidAndMpwd(String mid , String mpwd);
+     // 아이디로 엔티티 검색 메서드 : findBy필드명
+        // DAO : select * from member where mid = ?
+        MemberEntity findByMid(String mid);
+
 } // i ed
