@@ -4,27 +4,36 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 import korweb.model.dto.MemberDto;
+import korweb.model.dto.PointDto;
 import korweb.model.entity.MemberEntity;
-import korweb.model.repository.MembeRepository;
+import korweb.model.entity.PointEntity;
+import korweb.model.repository.MemberRepository;
+import korweb.model.repository.PointRepository;
+import org.apache.tomcat.util.net.jsse.PEMFile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Member;
-import java.util.List;
-import java.util.Objects;
 
 @Service
 public class MemberService {
     @Autowired
-    private MembeRepository membeRepository;
+    private MemberRepository memberRepository;
 
     public boolean signup(MemberDto memberDto) {
         // 1. 저장할 dto를 entity 타입으로 변환한다.
         MemberEntity memberEntity = memberDto.toEntity();
         // 2. 변환된 entity를 save 한다.
-        MemberEntity saveEntity = membeRepository.save(memberEntity);
+        MemberEntity saveEntity = memberRepository.save(memberEntity);
         // 3. save(영속성/연결된)한 엔티티를 반환한다.
-        if(saveEntity.getMno() > 0) {return true;}
+        if(saveEntity.getMno() > 0) {
+            PointDto pointDto = PointDto.builder()
+                    .pcontent("회원가입 축하 포인트")
+                    .pvalue(100)
+                    .build();
+            pointPayment(pointDto,memberEntity);
+            return true;
+        }
         return false;
     }
 
@@ -50,10 +59,16 @@ public class MemberService {
 `       */
 
         // [방법2]
-        boolean result = membeRepository.existsByMidAndMpwd(memberDto.getMid(), memberDto.getMpwd());
+        boolean result = memberRepository.existsByMidAndMpwd(memberDto.getMid(), memberDto.getMpwd());
         if (result) {
             System.out.println("로그인 성공");
             setSession(memberDto.getMid());
+            PointDto pointDto = PointDto.builder()
+                    .pcontent("로그인 포인트")
+                    .pvalue(1)
+                    .build();
+            MemberEntity memberEntity = memberRepository.findById(getMyInfo().getMno()).get();
+            pointPayment(pointDto,memberEntity);
             return true;
         } else {
             System.out.println("로그인 실패");
@@ -105,7 +120,7 @@ public class MemberService {
         // 2. 만약 로그인 상태이면
         if (mid != null) {
             // 3. 회원아이디로 엔티티 조회
-            MemberEntity memberEntity = membeRepository.findByMid(mid);
+            MemberEntity memberEntity = memberRepository.findByMid(mid);
             return memberEntity.toDto();
         }
         return null;
@@ -115,8 +130,8 @@ public class MemberService {
     public boolean myDelete() {
         String mid = getSession();
         if(mid != null) {
-            MemberEntity memberEntity = membeRepository.findByMid(mid);
-            membeRepository.delete(memberEntity);
+            MemberEntity memberEntity = memberRepository.findByMid(mid);
+            memberRepository.delete(memberEntity);
             return true;
         }
         return false;
@@ -127,7 +142,7 @@ public class MemberService {
     public boolean myUpdate(MemberDto memberDto) {
         String mid = getSession();
         if (mid != null) {
-            MemberEntity memberEntity = membeRepository.findByMid(mid);
+            MemberEntity memberEntity = memberRepository.findByMid(mid);
             memberEntity.setMname(memberDto.getMname());
             memberEntity.setMemail(memberDto.getMemail());
             return true;
@@ -135,4 +150,26 @@ public class MemberService {
         return false;
     } // f ed
 
+    @Autowired private PointRepository pointRepository;
+
+    @Transactional
+    // [9] 포인트 지급 함수 . 지급내용은 pcontent , 지급수량은 pvalue
+    public boolean pointPayment(PointDto pointDto , MemberEntity memberEntity) {
+        PointEntity pointEntity = pointDto.toEntity();
+        pointEntity.setMemberEntity(memberEntity);
+
+        PointEntity saveEntity = pointRepository.save(pointEntity);
+        if(saveEntity.getPno() > 0){return true;} return false;
+    }
+
+    // [10] 현재 내 포인트 조회
+    public PointDto myPointList() {
+        String mid = getSession();
+        if (mid != null) {
+            MemberEntity memberEntity = memberRepository.findByMid(mid);
+            PointEntity pointEntity = pointRepository.findById(memberEntity.getMno()).get();
+            return pointEntity.toDto();
+        }
+        return null;
+    }
 } // c ed

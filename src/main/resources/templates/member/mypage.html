@@ -11,7 +11,28 @@
 
     <div th:replace="~{ /header.html :: header }"> </div> <!-- header 의 fragment 호출 -->
     
-    <div> <h3> 여기는 마이 페이지! </h3></div>
+    <div> <h3> 여기는 마이 페이지! </h3>
+        <button type="button" onclick="myInfo()"> 내 정보 </button>
+
+        <button type="button"> <a href="/member/update">내 정보 수정하기</a></button>
+
+        <button type="button" onclick="myDelete()"> 회원탈퇴(ㅠㅠ) </button>
+
+        <div class="form-floating mb-3">
+            <input type="text" readonly value="" class="form-control midInput" id="floatingInput" placeholder="ID">
+            <label for="floatingInput">아이디</label>
+          </div>
+
+          <div class="form-floating mb-3">
+            <input type="text" readonly value="" class="form-control mnameInput" id="floatingName" placeholder="name">
+            <label for="floatingPassword"> 이름 </label>
+          </div>
+
+          <div class="form-floating mb-3">
+            <input type="text" readonly value="" class="form-control memailInput" id="floatingEmail" placeholder="email">
+            <label for="floatingPassword"> 이메일 </label>
+          </div>
+    </div>
 
     <script src="/js/member/mypage.js"> </script>
 </body>

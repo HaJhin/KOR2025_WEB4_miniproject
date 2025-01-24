@@ -26,4 +26,9 @@ public class ViewController {
     public String myPage() {
         return "/member/mypage.html";
     }
+
+    @GetMapping("/member/update")
+    public String update() {
+        return "/member/update.html";
+    }
 }

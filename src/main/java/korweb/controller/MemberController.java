@@ -1,6 +1,7 @@
 package korweb.controller;
 
 import korweb.model.dto.MemberDto;
+import korweb.model.dto.PointDto;
 import korweb.service.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -51,5 +52,11 @@ public class MemberController {
     @PutMapping("/member/update.do")
     public boolean myUpdate(@RequestBody MemberDto memberDto) {
         return memberService.myUpdate(memberDto);
+    }
+
+    // 8. 내 포인트 지급 내역 조회
+    @GetMapping("/member/pointlist.do")
+    public PointDto myPointList() {
+        return memberService.myPointList();
     }
 }

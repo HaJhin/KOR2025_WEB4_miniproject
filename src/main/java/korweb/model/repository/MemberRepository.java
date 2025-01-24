@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface MembeRepository extends JpaRepository<MemberEntity,Integer> {
+public interface MemberRepository extends JpaRepository<MemberEntity,Integer> {
     /*
      인터페이스는 추상메서드를 가질 수 있는 타입이다.
      DAO 특정 값 조회 : select * from 테이블명 where 필드명 = ?
