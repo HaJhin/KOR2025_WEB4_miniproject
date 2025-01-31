@@ -12,9 +12,17 @@ public class MemberController {
     @Autowired
     private MemberService memberService;
 
+    /*
     // 1. 회원가입 HTTP 매핑
     @PostMapping("/member/signup.do")
     public boolean signup(@RequestBody MemberDto memberDto) {
+        return memberService.signup(memberDto);
+    }
+    */
+
+    // 11. 첨부파일이 포함된 회원가입 HTTP 매핑. 첨부파일은 JSON 타입이 아닌 multipart/form-data 타입으로 @RequestBody를 사용하지 않는다.
+    @PostMapping("/member/signup.do")
+    public boolean signup(MemberDto memberDto) { // @RequestBody를 사용하지 않는다.
         return memberService.signup(memberDto);
     }
 

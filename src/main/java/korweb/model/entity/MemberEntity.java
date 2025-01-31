@@ -28,6 +28,10 @@ public class MemberEntity extends BaseTime {
     @Column(nullable = false , unique = true , length = 50)
     private String memail;
 
+    @Column(nullable = false , columnDefinition = "varchar(255)")
+    private String mimg; // 회원프로필
+
+
     // toDto
     public MemberDto toDto() {
         return MemberDto.builder()
@@ -36,6 +40,7 @@ public class MemberEntity extends BaseTime {
                 .mpwd(this.mpwd)
                 .mname(this.mname)
                 .memail(this.memail)
+                .mimg(this.mimg)
                 .build();
     }
 }

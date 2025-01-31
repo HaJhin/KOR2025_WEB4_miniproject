@@ -19,8 +19,21 @@ import java.lang.reflect.Member;
 public class MemberService {
     @Autowired
     private MemberRepository memberRepository;
+    @Autowired
+    private FileService fileService;
 
+    @Transactional
     public boolean signup(MemberDto memberDto) {
+        // - 프로필사진 첨부파일이 존재하면 업로드 진행
+        if(memberDto.getUploadFile().isEmpty()) { // (1) 만약 업로드 파일이 비어 있으면
+            memberDto.setMimg("default_profile.png");
+        } // 디폴트 이미지 세팅
+        else { // (2) 만약 업로드 파일이 존재하면 파일 서비스 객체 내 업로드 함수를 호출한다.
+            String fileName = fileService.fileUpload(memberDto.getUploadFile()); // 업로드 함수에 multipart 객체 대입
+            if (fileName == null) {return false;} // 업로드 실패 시 회원가입 실패
+            else {memberDto.setMimg(fileName);}
+            }
+
         // 1. 저장할 dto를 entity 타입으로 변환한다.
         MemberEntity memberEntity = memberDto.toEntity();
         // 2. 변환된 entity를 save 한다.
